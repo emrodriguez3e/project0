@@ -11,40 +11,49 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
 
+/*
+TODO Implement Queue BFS
+
+TODO Implement Stack DFS
+
+ */
+
 public class SensorNetwork {
-	
+
+	//create objects
 	private Map<Integer, Axis> nodes = new LinkedHashMap<Integer, Axis>();
 	Map<Integer, Boolean> discovered = new HashMap<Integer, Boolean>();
 	Map<Integer, Boolean> explored = new HashMap<Integer, Boolean>();
 	Map<Integer, Integer> parent = new HashMap<Integer, Integer>();
 	Map<Integer, Integer> connectedNodes = new HashMap<Integer, Integer>();
 	Stack<Integer> s = new Stack<Integer>();
-	
+
+	//main method start
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Enter the width:");
 		double width = scan.nextDouble();
 
 		System.out.println("Enter the height:");
-		double height = scan.nextDouble();
+		double height = scan.nextDouble();//grab height
 		
 		System.out.println("Enter the number of nodes:");
-		int numberOfNodes = scan.nextInt();
+		int numberOfNodes = scan.nextInt();//input nodes
 		
 		System.out.println("Enter the Transmission range in meters:");
 		int transmissionRange = scan.nextInt();
-		scan.close();
+		scan.close();//end input scan
 		
-		SensorNetwork sensor = new SensorNetwork();
+		SensorNetwork sensor = new SensorNetwork(); //create self object
 		sensor.populateNodes(numberOfNodes, width, height);
 
 		System.out.println("\nNode List:");
 		for(int key :sensor.nodes.keySet()) {
 			Axis ax = sensor.nodes.get(key);
 			System.out.println("Node:" + key + ", xAxis:" + ax.getxAxis() + ", yAxis:" + ax.getyAxis());	
-		}
+		}//for loop that is set ax to node key
 		
-		Map<Integer, Set<Integer>> adjacencyList1 = new LinkedHashMap<Integer, Set<Integer>> ();
+		Map<Integer, Set<Integer>> adjacencyList1 = new LinkedHashMap<Integer, Set<Integer>> (); //create map
 
 		sensor.populateAdjacencyList(numberOfNodes, transmissionRange, adjacencyList1);
 		System.out.println("\nAdjacency List: ");
@@ -57,17 +66,31 @@ public class SensorNetwork {
 				}
 			}
 			System.out.println();
-			}
+		}
 			
 		sensor.executeDepthFirstSearchAlg(width, height, adjacencyList1);
-	}
+	}// end of main method
+
+
+	void executeBreadthFirstSearchAlg(double width, double height, Map<Integer, Set<Integer>> adjList){
+		System.out.println("\nExecuting BFS Algorithm");
+
+
+
+
+		drawGraph(width, height, adjList); //draw graph method
+
+	}//end of BFS
+
 
 	void executeDepthFirstSearchAlg(double width, double height, Map<Integer, Set<Integer>> adjList) {
 		System.out.println("\nExecuting DFS Algorithm");
 		List<Set<Integer>> connectedNodes = new ArrayList<Set<Integer>>();
+
+		//create a node for every adjList
 		for(int node: adjList.keySet()) {
 			Set<Integer> connectedNode = new LinkedHashSet<Integer>();
-			recursiveDFS(node, connectedNode, adjList);
+			recursiveDFS(node, connectedNode, adjList); // call recursiveDFS
 			
 			if(!connectedNode.isEmpty()) {
 				connectedNodes.add(connectedNode);
@@ -85,8 +108,22 @@ public class SensorNetwork {
 			System.out.println(list);
 		}
 
-		
 		//Draw sensor network graph
+//		SensorNetworkGraph graph = new SensorNetworkGraph();
+//		graph.setGraphWidth(width);
+//		graph.setGraphHeight(height);
+//		graph.setNodes(nodes);
+//		graph.setAdjList(adjList);
+//		graph.setPreferredSize(new Dimension(960, 800));
+//		Thread graphThread = new Thread(graph);
+//		graphThread.start();
+		drawGraph(width, height, adjList);
+
+	}// end of depth first sorting algorithm
+
+
+	//moved stuff into a call
+	void drawGraph(double width, double height, Map<Integer, Set<Integer>> adjList){
 		SensorNetworkGraph graph = new SensorNetworkGraph();
 		graph.setGraphWidth(width);
 		graph.setGraphHeight(height);
@@ -94,7 +131,7 @@ public class SensorNetwork {
 		graph.setAdjList(adjList);
 		graph.setPreferredSize(new Dimension(960, 800));
 		Thread graphThread = new Thread(graph);
-		graphThread.start(); 
+		graphThread.start();
 	}
 
 	void recursiveDFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList) {
@@ -135,6 +172,8 @@ public class SensorNetwork {
 			}
 			
 	}
+
+
 	
 	void populateNodes(int nodeCount, double width, double height) {
 		Random random = new Random();
@@ -154,8 +193,14 @@ public class SensorNetwork {
 			nodes.put(i, axis);	
 		}
 	}
-	
+
+
+
+
+
 	void populateAdjacencyList(int nodeCount, int tr, Map<Integer, Set<Integer>> adjList) {
+
+		//this counts the nodes
 		for(int i=1; i<= nodeCount; i++) {
 			adjList.put(i, new HashSet<Integer>());
 		}
@@ -174,7 +219,7 @@ public class SensorNetwork {
 				double xAxis2 = axis2.getxAxis();
 				double yAxis2 = axis2.getyAxis();
 				
-				double distance =  Math.sqrt(((xAxis1-xAxis2)*(xAxis1-xAxis2)) + ((yAxis1-yAxis2)*(yAxis1-yAxis2)));
+				double distance =  Math.sqrt(((xAxis1-xAxis2)*(xAxis1-xAxis2)) + ((yAxis1-yAxis2)*(yAxis1-yAxis2))); //get the distance between two nodes
 				
 				if(distance <= tr) {
 					Set<Integer> tempList = adjList.get(node1);
@@ -187,5 +232,7 @@ public class SensorNetwork {
 				}
 			}
 		}
-	}
-}
+	}//end of adjacencyList
+
+
+}// end of class
