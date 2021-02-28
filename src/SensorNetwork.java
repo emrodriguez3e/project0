@@ -45,14 +45,15 @@ public class SensorNetwork {
 		scan.close();//end input scan
 		
 		SensorNetwork sensor = new SensorNetwork(); //create self object
-		sensor.populateNodes(numberOfNodes, width, height);
+		sensor.populateNodes(numberOfNodes, width, height); //call populate nodes
 
 		System.out.println("\nNode List:");
 		for(int key :sensor.nodes.keySet()) {
 			Axis ax = sensor.nodes.get(key);
 			System.out.println("Node:" + key + ", xAxis:" + ax.getxAxis() + ", yAxis:" + ax.getyAxis());	
 		}//for loop that is set ax to node key
-		
+
+		//create an adjacency list
 		Map<Integer, Set<Integer>> adjacencyList1 = new LinkedHashMap<Integer, Set<Integer>> (); //create map
 
 		sensor.populateAdjacencyList(numberOfNodes, transmissionRange, adjacencyList1);
@@ -72,17 +73,38 @@ public class SensorNetwork {
 	}// end of main method
 
 
+
+	//BFS algorithm for the queue
 	void executeBreadthFirstSearchAlg(double width, double height, Map<Integer, Set<Integer>> adjList){
 		System.out.println("\nExecuting BFS Algorithm");
+		List<Set<Integer>> connectedNodes = new ArrayList<Set<Integer>>();
 
 
 
+		/*
+		Guts of algorithm should go here
+
+
+		*/
+
+
+		if(connectedNodes.size() == 1) {
+			System.out.println("Graph is fully connected with one connected component.");
+		} else {
+			System.out.println("Graph is not fully connected");
+		}
+
+		System.out.println("There are " + connectedNodes.size() + " connected components");
+		for(Set<Integer> list: connectedNodes) {
+			System.out.println(list);
+		}
 
 		drawGraph(width, height, adjList); //draw graph method
 
 	}//end of BFS
 
 
+	//dfs algorithm for recursion & stack
 	void executeDepthFirstSearchAlg(double width, double height, Map<Integer, Set<Integer>> adjList) {
 		System.out.println("\nExecuting DFS Algorithm");
 		List<Set<Integer>> connectedNodes = new ArrayList<Set<Integer>>();
@@ -91,7 +113,8 @@ public class SensorNetwork {
 		for(int node: adjList.keySet()) {
 			Set<Integer> connectedNode = new LinkedHashSet<Integer>();
 			recursiveDFS(node, connectedNode, adjList); // call recursiveDFS
-			
+
+
 			if(!connectedNode.isEmpty()) {
 				connectedNodes.add(connectedNode);
 			}
@@ -134,13 +157,15 @@ public class SensorNetwork {
 		graphThread.start();
 	}
 
+
+	//recursion
 	void recursiveDFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList) {
 		
 		if(!s.contains(u) && !explored.containsKey(u)) {
 			s.add(u);
 			discovered.put(u, true);
 		} 
-		
+
 			while(!s.isEmpty()) {
 				if(!explored.containsKey(u)) {
 					List<Integer> list = new ArrayList<Integer>(adjList.get(u));
@@ -173,8 +198,16 @@ public class SensorNetwork {
 			
 	}
 
+	void queueBFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList){
 
-	
+	}
+
+	void stackDFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList){
+
+	}
+
+
+	//randomly generate location points for each node
 	void populateNodes(int nodeCount, double width, double height) {
 		Random random = new Random();
 		
