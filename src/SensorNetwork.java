@@ -83,7 +83,6 @@ public class SensorNetwork {
 //			Queue connectedNode2 = new LinkedList();
 			queueBFS(node, connectedNode,adjList);
 
-
 			if(!connectedNode.isEmpty()) {
 				connectedNodes.add(connectedNode); // error; seeking Set. See executeDepthFirstSearchAlg
 			}
@@ -115,8 +114,6 @@ public class SensorNetwork {
 		for(int node: adjList.keySet()) {
 			Set<Integer> connectedNode = new LinkedHashSet<Integer>();
 //			recursiveDFS(node, connectedNode, adjList); // call recursiveDFS
-
-
 
 			if(!connectedNode.isEmpty()) {
 				connectedNodes.add(connectedNode);
@@ -163,18 +160,18 @@ public class SensorNetwork {
 
 
 	//recursion
-	void recursiveDFS(int numberOfNodes, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList) {
+	void recursiveDFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList) {
 
-		if(!s.contains(numberOfNodes) && !explored.containsKey(numberOfNodes)) {
-			s.add(numberOfNodes);
-			discovered.put(numberOfNodes, true);
+		if(!s.contains(u) && !explored.containsKey(u)) {
+			s.add(u);
+			discovered.put(u, true);
 		}
 
 			while(!s.isEmpty()) {
 
-				if(!explored.containsKey(numberOfNodes)) {
+				if(!explored.containsKey(u)) {
 
-					List<Integer> list = new ArrayList<Integer>(adjList.get(numberOfNodes));
+					List<Integer> list = new ArrayList<Integer>(adjList.get(u));
 					for(int v: list) {
 
 						if(!discovered.containsKey(v)) {
@@ -182,23 +179,23 @@ public class SensorNetwork {
 							discovered.put(v, true);
 
 							if(parent.get(v) == null) {
-								parent.put(v, numberOfNodes);
+								parent.put(v, u);
 							}
 							recursiveDFS(v, connectedNode, adjList);
 						} else if(list.get(list.size()-1) == v) {
-							if( parent.containsKey(numberOfNodes)) {
-								explored.put(numberOfNodes, true);
-								s.removeElement(numberOfNodes);
+							if( parent.containsKey(u)) {
+								explored.put(u, true);
+								s.removeElement(u);
 
-								connectedNode.add(numberOfNodes);
-								recursiveDFS(parent.get(numberOfNodes), connectedNode, adjList);
+								connectedNode.add(u);
+								recursiveDFS(parent.get(u), connectedNode, adjList);
 							}
 						}
 					}
-				if(!explored.containsKey(numberOfNodes))
-					explored.put(numberOfNodes, true);
-					s.removeElement(numberOfNodes);
-					connectedNode.add(numberOfNodes);
+				if(!explored.containsKey(u))
+					explored.put(u, true);
+					s.removeElement(u);
+					connectedNode.add(u);
 				}
 			}
 
