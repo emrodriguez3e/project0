@@ -68,7 +68,8 @@ public class SensorNetwork {
 			System.out.println();
 		}
 
-		sensor.executeDepthFirstSearchAlg(width, height, adjacencyList);
+//		sensor.executeDepthFirstSearchAlg(width, height, adjacencyList);
+		sensor.executeBreadthFirstSearchAlg(width,height,adjacencyList);
 	}// end of main method
 
 
@@ -192,10 +193,12 @@ public class SensorNetwork {
 							}
 						}
 					}
-				if(!explored.containsKey(u))
+				if(!explored.containsKey(u)){
 					explored.put(u, true);
 					s.removeElement(u);
 					connectedNode.add(u);
+				}
+
 				}
 			}
 
@@ -206,10 +209,10 @@ public class SensorNetwork {
 
 		//I need to add the root?
 
-		System.out.println(adjList.values());//this returns a collection view
+
+		System.out.println(adjList.get(numberOfNodes));//this returns a collection view
 		Collection tmp = adjList.values();
-		System.out.println();
-		System.out.println(tmp.iterator());
+
 
 		System.exit(0);
 
@@ -261,9 +264,6 @@ public class SensorNetwork {
 			nodes.put(i, axis);
 		}
 	}
-
-
-
 
 
 	void populateAdjacencyList(int nodeCount, int tr, Map<Integer, Set<Integer>> adjList) {
