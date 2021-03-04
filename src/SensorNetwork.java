@@ -114,7 +114,6 @@ public class SensorNetwork {
 		//create a node for every adjList
 		for(int node: adjList.keySet()) {
 			Set<Integer> connectedNode = new LinkedHashSet<Integer>();
-//			Stack connectedNode1 = new Stack();
 //			recursiveDFS(node, connectedNode, adjList); // call recursiveDFS
 
 
