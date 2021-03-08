@@ -1,6 +1,6 @@
 import java.awt.Dimension;
 import java.util.*;
-import java.util.Queue;
+
 
 /*
 TODO Implement Queue BFS
@@ -18,7 +18,7 @@ public class SensorNetwork {
 	Map<Integer, Integer> parent = new HashMap<Integer, Integer>();
 	Map<Integer, Integer> connectedNodes = new HashMap<Integer, Integer>();
 	Stack<Integer> s = new Stack<Integer>();
-	Queue<Integer> q = new LinkedList<Integer>();
+	Queue q = new LinkedList<Integer>();
 
 	//main method start
 	public static void main(String[] args) {
@@ -26,36 +26,47 @@ public class SensorNetwork {
 //		System.out.println("Enter the width:");
 //		double width = scan.nextDouble();
 		double width = 50;
+
 //		System.out.println("Enter the height:");
 //		double height = scan.nextDouble();//grab height
+
 		double height = 50;
+
 //		System.out.println("Enter the number of nodes:");
 //		int numberOfNodes = scan.nextInt();//input nodes
+
 		int numberOfNodes = 50;
+
 //		System.out.println("Enter the Transmission range in meters:");
 //		int transmissionRange = scan.nextInt();
 		int transmissionRange = 15;
+
 //		System.out.println("Please enter a traversal technique");
 //		System.out.println("0--recursiveDFS\n1--StackDFS\n2--QueueBFS");
 //		int input = scan.nextInt();
 
+		System.out.println("Please enter algorithm type\n 0--RecursiveDFS\n1--Queue BFS\n2--StackDFS");
+		int algInput = scan.nextInt();
 		scan.close();//end input scan
 
 		SensorNetwork sensor = new SensorNetwork(); //create self object
+		SensorNetwork sensor2 = new SensorNetwork();
 		sensor.populateNodes(numberOfNodes, width, height); //call populate nodes
+		sensor2.populateNodes(numberOfNodes, width, height);
 
 		System.out.println("\nNode List:");
-		//Access axis member
 		for(int key :sensor.nodes.keySet()) {
 			Axis ax = sensor.nodes.get(key);
 			System.out.println("Node:" + key + ", xAxis:" + ax.getxAxis() + ", yAxis:" + ax.getyAxis());
 		}//for loop that is set ax to node key
 
 		//create an adjacency list
-		Map<Integer, Set<Integer>> adjacencyList = new LinkedHashMap<Integer, Set<Integer>> (); //create map
-
+		Map<Integer, Set<Integer>> adjacencyList = new LinkedHashMap<Integer, Set<Integer>> (); //create maps
+		Map<Integer, Set<Integer>> adjacencyList2 = new LinkedHashMap<Integer, Set<Integer>> ();
 
 		sensor.populateAdjacencyList(numberOfNodes, transmissionRange, adjacencyList);
+		sensor2.populateAdjacencyList(numberOfNodes, transmissionRange, adjacencyList2);
+
 		System.out.println("\nAdjacency List: ");
 
 		for(int i: adjacencyList.keySet()) {
@@ -68,8 +79,13 @@ public class SensorNetwork {
 			System.out.println();
 		}
 
-//		sensor.executeDepthFirstSearchAlg(width, height, adjacencyList);
-		sensor.executeBreadthFirstSearchAlg(width,height,adjacencyList);
+		if (algInput == 1) {
+			sensor2.executeBreadthFirstSearchAlg(width,height,adjacencyList2);
+		}
+		if(algInput == 0 || algInput == 2) {
+			sensor.executeDepthFirstSearchAlg(width, height, adjacencyList, algInput);
+		}
+
 	}// end of main method
 
 
@@ -81,46 +97,54 @@ public class SensorNetwork {
 
 		for(int node: adjList.keySet()) {
 			Set<Integer> connectedNode = new LinkedHashSet<Integer>();
-//			Queue connectedNode2 = new LinkedList();
 			queueBFS(node, connectedNode,adjList);
 
-			if(!connectedNode.isEmpty()) {
-				connectedNodes.add(connectedNode); // error; seeking Set. See executeDepthFirstSearchAlg
-			}
-		}//end of for loop
-
-
-		if(connectedNodes.size() == 1) {
-			System.out.println("Graph is fully connected with one connected component.");
-		} else {
-			System.out.println("Graph is not fully connected");
+        if(!connectedNode.isEmpty()) {
+			connectedNodes.add(connectedNode);
 		}
+	}
+    if(connectedNodes.size() == 1) {
+        System.out.println("Graph is fully connected with one connected component.");
+    }else {
+        System.out.println("Graph is not fully connected");
+    }
 
 		System.out.println("There are " + connectedNodes.size() + " connected components");
 		for(Set<Integer> list: connectedNodes) {
 			System.out.println(list);
 		}
-
 		drawGraph(width, height, adjList); //draw graph method
 
 	}//end of BFS
 
-
 	//dfs algorithm for recursion & stack
-	void executeDepthFirstSearchAlg(double width, double height, Map<Integer, Set<Integer>> adjList) {
+	void executeDepthFirstSearchAlg(double width, double height, Map<Integer, Set<Integer>> adjList, int algInput) {
 		System.out.println("\nExecuting DFS Algorithm");
 		List<Set<Integer>> connectedNodes = new ArrayList<Set<Integer>>();
 
-		//create a node for every adjList
-		for(int node: adjList.keySet()) {
-			Set<Integer> connectedNode = new LinkedHashSet<Integer>();
-//			recursiveDFS(node, connectedNode, adjList); // call recursiveDFS
+		if (algInput == 0){
+			for(int node: adjList.keySet()) {
+				Set<Integer> connectedNode = new LinkedHashSet<Integer>();
+				recursiveDFS(node, connectedNode, adjList); // call recursiveDFS
 
-			if(!connectedNode.isEmpty()) {
-				connectedNodes.add(connectedNode);
-			}
-		}//end of for loop
 
+				if(!connectedNode.isEmpty()) {
+					connectedNodes.add(connectedNode);
+				}
+			}//end of for loop
+		}else {
+			//create a node for every adjList
+			for (int node : adjList.keySet()) {
+				Set<Integer> connectedNode = new LinkedHashSet<Integer>();
+				stackDFS(node, connectedNode, adjList); //call stackDFS
+
+				if (!connectedNode.isEmpty()) {
+					connectedNodes.add(connectedNode);
+				}
+			}//end of for loop
+		}
+
+		System.out.println(connectedNodes);
 		if(connectedNodes.size() == 1) {
 			System.out.println("Graph is fully connected with one connected component.");
 		} else {
@@ -141,8 +165,7 @@ public class SensorNetwork {
 //		graph.setPreferredSize(new Dimension(960, 800));
 //		Thread graphThread = new Thread(graph);
 //		graphThread.start();
-
-//		drawGraph(width, height, adjList);
+		drawGraph(width, height, adjList);
 
 	}// end of depth first sorting algorithm
 
@@ -167,14 +190,10 @@ public class SensorNetwork {
 			s.add(u);
 			discovered.put(u, true);
 		}
-
 			while(!s.isEmpty()) {
-
 				if(!explored.containsKey(u)) {
-
 					List<Integer> list = new ArrayList<Integer>(adjList.get(u));
 					for(int v: list) {
-
 						if(!discovered.containsKey(v)) {
 							s.add(v);
 							discovered.put(v, true);
@@ -193,57 +212,70 @@ public class SensorNetwork {
 							}
 						}
 					}
-				if(!explored.containsKey(u)){
+				if(!explored.containsKey(u))
 					explored.put(u, true);
 					s.removeElement(u);
 					connectedNode.add(u);
-				}
-
 				}
 			}
 
 	}
 
-	//
-	void queueBFS(int numberOfNodes, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList){
+	void queueBFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList){
 
-		//I need to add the root?
-
-
-		System.out.println(adjList.get(numberOfNodes));//this returns a collection view
-		Collection tmp = adjList.values();
-
-
-		System.exit(0);
-
-	}
+		for(int i: adjList.keySet()) {
+			q.add(i);
+		}
+//		q.add(u);
+		while(!q.isEmpty()) {
+			if(!explored.containsKey(u)) {
+				List<Integer> list = new ArrayList<Integer>(adjList.get(u));
+				for(int v: list) {
+					if(!discovered.containsKey(v)) {
+						discovered.put(v, true);
+						if(parent.get(v) == null) {
+							parent.put(v, u);
+						}
+					}
+					else if(list.get(list.size()-1) == v) {
+						if( parent.containsKey(u)) {
+							explored.put(u, true);
+							q.remove(u);
+							connectedNode.add(u);
+						}
+					}
+				}
+				if(!explored.containsKey(u))
+					explored.put(u, true);
+					q.remove();
+					connectedNode.add(u);
+			}
+			q.remove();
+		}//end of while loop
+	}// end of queueBFS
 
 	void stackDFS(int u, Set<Integer> connectedNode, Map<Integer, Set<Integer>> adjList){
 
-		//s is stack
-		/*
-		* Initialize S to be a stack with one element s
-		* Whatever the fuck s is supposed to be within S
-		* */
-		s.add(u);
+        s.push(u);
+            while(!s.isEmpty())
+            {
+                    List<Integer> list = new ArrayList<Integer>(adjList.get(u));
+                    for(int v: list)
+                    {
+                        if(!explored.containsKey(v))
+                        {
+                            s.push(v);
 
-		while(!s.isEmpty()){
-			//take node u from S
+                        }
 
-			if(!explored.containsKey(u)) {
-				explored.put(u, true);
 
-				//for each edge (u,v) to u
+                    }
+                    explored.put(u, true);
+                    connectedNode.add(u);
+                    u = s.pop();
 
-				//add v to stack S
-				//add adjList.value() to stack?
-
-			}//end of the if loop
-		}//end of while loop
-
-//		drawGraph(double width, double height, Map<Integer, Set<Integer>> adjList);
-	}
-
+            }
+    }
 
 	//randomly generate location points for each node
 	void populateNodes(int nodeCount, double width, double height) {
